@@ -2,6 +2,8 @@ package br.com.joschonarth.springpay.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "tb_wallet_type")
 public class WalletType {
@@ -14,6 +16,11 @@ public class WalletType {
 
 
     public WalletType() {
+    }
+
+    public WalletType(Long id, String description) {
+        this.id = id;
+        this.description = description;
     }
 
     public Long getId() {
@@ -30,5 +37,36 @@ public class WalletType {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public enum Enum {
+
+        USER(1L, "user"),
+        MERCHANT(2L, "merchant");
+
+        Enum(Long id, String descriptioon) {
+            this.id = id;
+            this.descriptioon = descriptioon;
+        }
+
+        private Long id;
+        private String descriptioon;
+
+        public WalletType get() {
+            return new WalletType(id, descriptioon);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WalletType that = (WalletType) o;
+        return Objects.equals(id, that.id) && Objects.equals(description, that.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, description);
     }
 }
