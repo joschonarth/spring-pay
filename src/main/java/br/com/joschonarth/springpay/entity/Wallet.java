@@ -31,8 +31,15 @@ public class Wallet {
     @JoinColumn(name = "wallet_type_id")
     private WalletType walletType;
 
-    public Wallet(Long id) {
-        this.id = id;
+    public Wallet() {
+    }
+
+    public Wallet(String fullName, String cpfCnpj, String email, String password, WalletType walletType) {
+        this.fullName = fullName;
+        this.cpfCnpj = cpfCnpj;
+        this.email = email;
+        this.password = password;
+        this.walletType = walletType;
     }
 
     public Long getId() {
