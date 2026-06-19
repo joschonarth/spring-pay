@@ -2,10 +2,15 @@ package br.com.joschonarth.springpay.service;
 
 import br.com.joschonarth.springpay.controller.dto.TransferDto;
 import br.com.joschonarth.springpay.entity.Transfer;
+import br.com.joschonarth.springpay.entity.Wallet;
+import br.com.joschonarth.springpay.exception.InsufficientBalanceException;
+import br.com.joschonarth.springpay.exception.TransferNotAllowedForWalletTypeException;
+import br.com.joschonarth.springpay.exception.TransferNotAuthorizedException;
 import br.com.joschonarth.springpay.exception.WalletNotFoundException;
 import br.com.joschonarth.springpay.repository.TransferRepository;
 import br.com.joschonarth.springpay.repository.WalletRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TransferService {
@@ -25,6 +30,7 @@ public class TransferService {
         this.walletRepository = walletRepository;
     }
 
+    @Transactional
     public Transfer transfer(TransferDto transferDto) {
 
         var sender = walletRepository.findById(transferDto.payer())
@@ -35,6 +41,30 @@ public class TransferService {
 
         validateTransfer(transferDto, sender);
 
-        return null;
+        sender.debit(transferDto.value());
+        receiver.credit(transferDto.value());
+
+        var transfer = new Transfer(sender, receiver, transferDto.value());
+
+        walletRepository.save(sender);
+        walletRepository.save(receiver);
+        var transferResult = transferRepository.save(transfer);
+
+        return transferResult;
+    }
+
+    private void validateTransfer(TransferDto transferDto, Wallet sender) {
+
+        if (!sender.isTransferAllowedForWalletType()) {
+            throw new TransferNotAllowedForWalletTypeException();
+        }
+
+        if (!sender.isBalancerEqualOrGreatherThan(transferDto.value())) {
+            throw new InsufficientBalanceException();
+        }
+
+        if (!authorizationService.isAuthorized(transferDto)) {
+            throw new TransferNotAuthorizedException();
+        }
     }
 }

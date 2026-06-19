@@ -1,6 +1,8 @@
 package br.com.joschonarth.springpay.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
@@ -40,6 +42,22 @@ public class Wallet {
         this.email = email;
         this.password = password;
         this.walletType = walletType;
+    }
+
+    public boolean isTransferAllowedForWalletType() {
+        return this.walletType.equals(WalletType.Enum.USER.get());
+    }
+
+    public boolean isBalancerEqualOrGreatherThan(@NotNull @DecimalMin("0.01") BigDecimal value) {
+        return this.balance.doubleValue() >= value.doubleValue();
+    }
+
+    public void debit(@NotNull @DecimalMin("0.01") BigDecimal value) {
+        this.balance = this.balance.min(value);
+    }
+
+    public void credit(@NotNull @DecimalMin("0.01") BigDecimal value) {
+        this.balance = this.balance.add(value);
     }
 
     public Long getId() {
