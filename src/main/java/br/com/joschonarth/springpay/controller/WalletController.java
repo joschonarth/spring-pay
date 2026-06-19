@@ -3,6 +3,7 @@ package br.com.joschonarth.springpay.controller;
 import br.com.joschonarth.springpay.controller.dto.CreateWalletDto;
 import br.com.joschonarth.springpay.entity.Wallet;
 import br.com.joschonarth.springpay.service.WalletService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,8 +19,8 @@ public class WalletController {
         this.walletService = walletService;
     }
 
-    @PostMapping("/wallet")
-    public ResponseEntity<Wallet> createWallet(@RequestBody CreateWalletDto dto) {
+    @PostMapping("/wallets")
+    public ResponseEntity<Wallet> createWallet(@RequestBody @Valid CreateWalletDto dto) {
 
         var wallet = walletService.creteWallet(dto);
 
