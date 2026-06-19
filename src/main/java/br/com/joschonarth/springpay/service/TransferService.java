@@ -63,7 +63,7 @@ public class TransferService {
             throw new TransferNotAllowedForWalletTypeException();
         }
 
-        if (!sender.isBalancerEqualOrGreatherThan(transferDto.value())) {
+        if (!sender.isBalancerEqualOrGreaterThan(transferDto.value())) {
             throw new InsufficientBalanceException();
         }
 
